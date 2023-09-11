@@ -9,3 +9,4 @@ module.exports = () => {
     console.log(ex);
   })
 }
+//=> IMPO: Detect Mongo DB Down and handle this Error If Happen.

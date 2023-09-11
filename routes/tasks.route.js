@@ -4,16 +4,22 @@ const { ListModel, TaskModel } = require('../models/index');
 const Joi = require('joi');
 const joiValidateMiddle = require('../middlewares/joiValidateMiddle');
 const tryCatchWrapper = require('../utils/tryCatchWrapper');
+const joiValidateParamsMiddle = require('../middlewares/joiValidateParamsMiddle');
+const joiValidateBodyMiddle = require('../middlewares/joiValidateBodyMiddle');
+const appError = require('../errors/appError');
 
 const tasksRoute = express.Router({ mergeParams: true });
 
 tasksRoute.get(
   '/', 
-  [verifyJWTMiddle, joiValidateMiddle(validateGetTasksJoi, 'params')], 
+  [verifyJWTMiddle, joiValidateParamsMiddle(validateGetTasksParamsJoi)], 
   tryCatchWrapper( async (req, res) => {
     const listDocumentDB = await ListModel.findByIdAndUserId(req.params.listId, req.userId);
 
-    if(!listDocumentDB) return new GeneralInvalidDataError('This list is not yours or does not exist.');
+    if(!listDocumentDB) throw new appError(
+      'This List is not exist.',
+      404, true, 'toastr'
+    );//=> LATER: Middleware With The First Line.
 
     const tasksList = await TaskModel.find({ _listId: listDocumentDB._id });
     res.send(tasksList);
@@ -21,19 +27,26 @@ tasksRoute.get(
 )
 
 tasksRoute.get(
-  '/:taskId', 
-  [verifyJWTMiddle, joiValidateMiddle(validateGetTaskJoi, 'params')], 
+  '/:taskId',                               
+  [verifyJWTMiddle, joiValidateParamsMiddle(validateGetTaskParamsJoi)], 
   tryCatchWrapper( async (req, res) => {
     const listDocumentDB = await ListModel.findByIdAndUserId(req.params.listId, req.userId);
 
-    if(!listDocumentDB) return new GeneralInvalidDataError('This list is not yours or does not exist.');
+    if(!listDocumentDB) throw new appError(
+      'This List is not exist.',
+      404, true, 'toastr'
+    );//=> LATER: Middleware With The First Line.
 
     const oneTaskList = await TaskModel.findOne({
       _listId: listDocumentDB._id,
       _id: req.params.taskId,
     });
 
-    if(!oneTaskList) return new GeneralInvalidDataError('This task is not yours or does not exist.');
+    if(!oneTaskList) throw new appError(
+      'This Task is not exist.',
+      404, true, 'toastr'
+    );//=> LATER: Middleware With The First Line.
+    // throw new GeneralInvalidDataError('This task is not exist.');
   
     res.send(oneTaskList);
   })
@@ -42,11 +55,18 @@ tasksRoute.get(
 
 tasksRoute.post(
   '/', 
-  [verifyJWTMiddle, joiValidateMiddle(validatePostTaskJoi, 'req')],
+  [
+    verifyJWTMiddle, 
+    joiValidateParamsMiddle(validatePostTaskParamsJoi),
+    joiValidateBodyMiddle(validatePostTaskBodyJoi),
+  ],
   tryCatchWrapper(async (req, res) => {
     const listDocumentDB = await ListModel.findByIdAndUserId(req.params.listId, req.userId);
 
-    if(!listDocumentDB) return new GeneralInvalidDataError('This list is not yours or does not exist.');//=> LATER: Middleware With The First Line.
+    if(!listDocumentDB) throw new appError(
+      'This List is not exist.',
+      404, true, 'toastr'
+    );//=> LATER: Middleware With The First Line.
 
     const newTask = await TaskModel({
       title: req.body.title,
@@ -60,11 +80,18 @@ tasksRoute.post(
 
 tasksRoute.patch(
   '/:taskId', 
-  [verifyJWTMiddle, joiValidateMiddle(validatePatchTaskJoi, 'req')], 
+  [
+    verifyJWTMiddle, 
+    joiValidateParamsMiddle(validatePatchTaskParamsJoi),
+    joiValidateBodyMiddle(validatePatchTaskBodyJoi),
+  ], 
   tryCatchWrapper(async (req, res) => {
     const listDocumentDB = await ListModel.findByIdAndUserId(req.params.listId, req.userId);
 
-    if(!listDocumentDB) return new GeneralInvalidDataError('This list is not yours or does not exist.');
+    if(!listDocumentDB) throw new appError(
+      'This List is not exist.',
+      404, true, 'toastr'
+    );//=> LATER: Middleware With The First Line.
 
     const updatedTaskDocument = await TaskModel.findOneAndUpdate(
       { _id: req.params.taskId, _listId: listDocumentDB._id }, 
@@ -72,7 +99,10 @@ tasksRoute.patch(
       { new: true }
     );
 
-    if(!updatedTaskDocument) return new GeneralInvalidDataError('This task is not yours or does not exist.');
+    if(!listDocumentDB) throw new appError(
+      'This Task is not exist.',
+      404, true, 'toastr'
+    );//=> LATER: Middleware With The First Line.
 
     res.send(updatedTaskDocument);
   })
@@ -80,55 +110,61 @@ tasksRoute.patch(
 
 tasksRoute.delete(
   '/:taskId', 
-  [verifyJWTMiddle, joiValidateMiddle(validateDeleteTaskJoi, 'params')], 
+  [verifyJWTMiddle, joiValidateParamsMiddle(validateDeleteTaskParamsJoi)], 
   tryCatchWrapper(async (req, res) => {
     const listDocumentDB = await ListModel.findByIdAndUserId(req.params.listId, req.userId);
 
-    if(!listDocumentDB) return new GeneralInvalidDataError('This list is not yours or does not exist.');
+    if(!listDocumentDB) throw new appError(
+      'This List is not exist.',
+      404, true, 'toastr'
+    );//=> LATER: Middleware With The First Line.
 
     const deletedTaskDocument = await TaskModel.findOneAndDelete({
       _id: req.params.taskId,
       _listId: listDocumentDB._id
     });
 
-    if(!deletedTaskDocument) return new GeneralInvalidDataError('This task is not yours or does not exist.');
+    if(!listDocumentDB) throw new appError(
+      'This Task is not exist.',
+      404, true, 'toastr'
+    );//=> LATER: Middleware With The First Line.
 
     res.send(deletedTaskDocument);
   })
 )
 
-function validateGetTasksJoi(comingData){
-  const schema =  Joi.object({
+function validateGetTasksParamsJoi(paramsData){
+  const paramsSchema =  Joi.object({
     listId: Joi.objectId().required(),
   })
-  return schema.validate(comingData);
+  return paramsSchema.validate(paramsData);
 }
 
-function validateGetTaskJoi(comingData){
-  const schema =  Joi.object({
+function validateGetTaskParamsJoi(paramsData){
+  const paramsSchema =  Joi.object({
     listId: Joi.objectId().required(),
     taskId: Joi.objectId().required(),
   })
-  return schema.validate(comingData);
+  return paramsSchema.validate(paramsData);
 }
 
-function validatePostTaskJoi(comingData){
-  const paramsSchema = Joi.object().keys({
+function validatePostTaskParamsJoi(paramsData){
+  const paramsSchema =  Joi.object({
     listId: Joi.objectId().required()
   });
 
-  const bodySchema = Joi.object().keys({
+  return paramsSchema.validate(paramsData);
+}
+
+function validatePostTaskBodyJoi(bodyData){
+  const bodySchema =  Joi.object({
     title:  Joi.string().min(1).max(50).required()
   });
 
-  const schema =  Joi.object({
-    params: paramsSchema,
-    body: bodySchema,
-  }).unknown(true);
-
-  return schema.validate(comingData);
+  return bodySchema.validate(bodyData);
 }
 
+/* => IMPO: Merge Two Validation Logic
 function validatePatchTaskJoi(comingData){
   const paramsSchema = Joi.object().keys({
     listId: Joi.objectId().required(),
@@ -147,13 +183,32 @@ function validatePatchTaskJoi(comingData){
 
   return schema.validate(comingData);
 }
+*/
 
-function validateDeleteTaskJoi(comingData){
-  const schema =  Joi.object({
+function validatePatchTaskParamsJoi(paramsData){ //=> STOP: change this to params instead of coming and the others also...
+  const paramsSchema =  Joi.object({
+    listId: Joi.objectId().required(),
+    taskId: Joi.objectId().required()
+  });
+
+  return paramsSchema.validate(paramsData);
+}
+
+function validatePatchTaskBodyJoi(bodyData){
+  const bodySchema =  Joi.object({
+    title:  Joi.string().min(1).max(50),
+    completed: Joi.boolean()
+  }).or('title', 'completed');
+
+  return bodySchema.validate(bodyData);
+}
+
+function validateDeleteTaskParamsJoi(paramsData){
+  const paramsSchema =  Joi.object({
     listId: Joi.objectId().required(),
     taskId: Joi.objectId().required()
   })
-  return schema.validate(comingData);
+  return paramsSchema.validate(paramsData);
 }
 
 module.exports = tasksRoute;

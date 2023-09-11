@@ -1,18 +1,22 @@
 const jwt = require("jsonwebtoken");
+const appError = require("../errors/appError");
 
 const JWTSecret = '1234554321asdfggfdsa0plmkoij987'; //=> LATER: SHOULD CHANGE TO ENV
 
 module.exports = verifyJWTMiddle = (req, res, next) => {
+  console.log('Verify JWT Middle Works!.');
+
   let JWTToken = req.header('X-access-token');
 
-  // if(!JWTToken) return res.status(401).send(new Error('No JWT provided.'));
-  if(!JWTToken) return new UnauthorizedError('No JWT provided.', 0);
+  if(!JWTToken) throw new appError('No JWT provided.', 401, false)
+  // throw new UnauthorizedError(0, 'No JWT provided.');
 
   jwt.verify(JWTToken, JWTSecret, (err, JWTTokenDecoded) => {
-    // if(err) return res.status(401).send(err);
-    if(err) return new UnauthorizedError(err.message, 1);
+    if(err) throw new appError(err.message, 401, false);
+    // throw new UnauthorizedError(0, err.message);
     req.userId = JWTTokenDecoded._id;
     next();
   }); 
 
 }
+

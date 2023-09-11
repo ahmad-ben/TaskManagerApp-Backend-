@@ -1,7 +1,9 @@
-const { UserModel } = require("../models/index");
-const mongoose = require("mongoose");
+const  mongoose = require("mongoose");
+const { UserModel } = require("../models");
+const appError = require("../errors/appError");
 
-module.exports = verifyRefreshToken = async (req, res, next) => {
+module.exports = verifyRefreshToken =   async (req, res, next) => {
+
   const userId = req.header('userId');
   const refreshToken = req.header('X-refresh-token');
   let isSessionValid = false;
@@ -10,12 +12,14 @@ module.exports = verifyRefreshToken = async (req, res, next) => {
     !userId ||
     !mongoose.Types.ObjectId.isValid(userId) ||
     !refreshToken
-  ) return new UnauthorizedError(1, 'Invalid data.');
-  // res.status(400).send(new Error('Some data is wrong.'));
+  ) return next(new appError('Invalid data.', 401, true, 'toastr'));
+  // throw new appError('Invalid data.', 401, true, 'toastr');
+  // return next(new UnauthorizedError(1111111, 'Invalid data.'));
 
   userDocument = await UserModel.findByIdAndToken(userId, refreshToken);
-  if(!userDocument) return new UnauthorizedError(1, 'User not found.');
-  // return res.status(404).send(new Error('User not found.'));
+  if(!userDocument) return next(new appError('User not found.', 401, true, 'toastr'));
+  // throw new appError('User not found.', 401, true, 'toastr');
+  // return next(new UnauthorizedError(1, 'User not found.'));
 
   req.userDocumentObj = userDocument;
 
@@ -27,6 +31,16 @@ module.exports = verifyRefreshToken = async (req, res, next) => {
   });
 
   if (isSessionValid) return next();
-  new UnauthorizedError(1, 'The session does not exist or is expired.');
-  // res.status(401).send(new Error('The session does not exist or is expired.'));
+  next(new appError('The session does not exist or is expired.', 401, true, 'toastr'));
+  // throw new appError('The session does not exist or is expired.', 401, true, 'toastr');
+  // return next(new UnauthorizedError(1, 'The session does not exist or is expired.'));
+
 }
+
+
+/*
+  =>IMPO 'The Approach Of Throw An Error Work Normally In All The Places Except This' Search about 'throw new in the custom middlewares':
+    !throw new UnauthorizedError(1, 'Invalid data.');
+    !throw new UnauthorizedError(1, 'User not found.');
+    !new UnauthorizedError(1, 'The session does not exist or is expired.');
+*/

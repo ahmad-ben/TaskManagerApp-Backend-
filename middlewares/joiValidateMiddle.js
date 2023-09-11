@@ -1,3 +1,7 @@
+/*
+const JoiInvalidDataError = require("../errors/JoiInvalidDataError");
+const appError = require("../errors/appError");
+
 module.exports = (validateFunction, wantedArgument) => {
   return (req, res, next) => {
     let validateFunctionArgument = req;
@@ -6,7 +10,12 @@ module.exports = (validateFunction, wantedArgument) => {
 
     const { error } = validateFunction(validateFunctionArgument);
   
-    if(error) return new JoiInvalidDataError(error.message);
+    console.log('Seeee:', error);
+    if(error) throw new JoiInvalidDataError(error.message);
+    // throw new appError(error.message, 400, )
+    // 
     next();
   }
 }
+*/
+//=> IMPO: Like Here! The Thrown Of Error Work Properly, should delete with al other error classes

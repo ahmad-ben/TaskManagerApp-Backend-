@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
+const GeneralInvalidDataError = require('../errors/generalInvalidData');
+const appError = require('../errors/appError');
 
 const JWTSecret = '1234554321asdfggfdsa0plmkoij987'; //=> LATER: SHOULD CHANGE TO ENV
 
@@ -50,12 +52,14 @@ const userSchema = mongoose.Schema(
 
         const userDocument = await this.findOne({ email });    
     
-        if(!userDocument) return Promise.reject(new Error('IMPO change later: No account with this info'));
+        if(!userDocument) throw new appError('This account is not registered, sign up first.', 404, false, 'message');
+        // throw new GeneralInvalidDataError('This account is not registered, sign up first.');
     
         const compareResult = await bcrypt.compare(password, userDocument.password);
     
         if (compareResult) return userDocument;
-        return Promise.reject(new Error('IMPO change later: Incorrect password.'));
+        throw new appError('Email or password are invalid.', 404, false, 'message');
+        // GeneralInvalidDataError('Email or password are invalid.');
     
       },
 
@@ -83,7 +87,8 @@ const userSchema = mongoose.Schema(
                 JWTSecret, //=> LATER: config.get('jwtPrivateKey'),
                 { expiresIn: '15s' }, //=> LATER: Should Be Less Than This Just For Test 
                 (err, encodedToken) => {
-                  if(err) return rej();
+                  if(err) throw new appError('Generate access token failed.', 500, true, 'toastr', 1);
+                  // throw new Error('Generate access token failed.');
                   return res(encodedToken);
                 }
               )

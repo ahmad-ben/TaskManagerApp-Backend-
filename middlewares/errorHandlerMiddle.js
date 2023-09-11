@@ -1,23 +1,30 @@
+const appError = require("../errors/appError");
+
 module.exports = (error, req, res, next) => {
-  console.log('here', error);
+  console.log('------------------------------------------------------');
+  console.log('here: ', error);
+  console.log('------------------------------------------------------');
 
-  if(error instanceof GeneralInvalidDataError ) {
+  if(error.code == 11000 ) {
     return res.status(400).json({
-      errorMessage: error.message, 
+      message: `This following email is already registered: '${error.keyValue.email}'.`, 
+      shouldNavigate: false,
+      clientMessageShape: 'message'
     });
   }
 
-  if(error instanceof UnauthorizedError ) {
-    return res.status(401).json({
-      errorCode: error.errorCode, //=> IMPO 0: JWT Problem, 1: Refresh Problem
+  if(error instanceof appError ) {
+    console.log('Here Two InstanceOf', error);
+    return res.status(error.statusCode).json({
+      message: error.message,
+      shouldNavigate: error.shouldNavigate,
+      clientMessageShape: error.clientMessageShape,
+      retry: error.retry,
     });
   }
 
-  if(error instanceof JoiInvalidDataError ) {
-    return res.status(404).json({
-      errorMessage: error.message,
-    });
-  }
-
-  return res.status(500).send('Something went wrong.');
+  console.log('Here Two Not InstanceOf', error);
+  return res.status(500).json({
+    errorMessage: 'Something went wrong.', 
+  });;
 }
