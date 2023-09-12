@@ -39,8 +39,8 @@ tasksRoute.get(
     if(!oneTaskList) throw new appError(
       'This Task is not exist.',
       404, true, 'toastr'
-    );// throw new GeneralInvalidDataError('This task is not exist.');
-  
+    );
+
     res.send(oneTaskList);
   })
 
@@ -141,27 +141,6 @@ function validatePostTaskBodyJoi(bodyData){
 
   return bodySchema.validate(bodyData);
 }
-
-/* => IMPO: Merge Two Validation Logic
-function validatePatchTaskJoi(comingData){
-  const paramsSchema = Joi.object().keys({
-    listId: Joi.objectId().required(),
-    taskId: Joi.objectId().required()
-  });
-
-  const bodySchema = Joi.object().keys({
-    title:  Joi.string().min(1).max(50),
-    completed: Joi.boolean()
-  }).or('title', 'completed');
-
-  const schema =  Joi.object({
-    params: paramsSchema,
-    body: bodySchema,
-  }).unknown(true);
-
-  return schema.validate(comingData);
-}
-*/
 
 function validatePatchTaskParamsJoi(paramsData){
   const paramsSchema =  Joi.object({

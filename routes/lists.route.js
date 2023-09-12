@@ -11,7 +11,6 @@ const listsRoute = express.Router();
 
 listsRoute.get('/', verifyJWTMiddle, 
   tryCatchWrapper( async (req, res) => {
-      console.log('tryCatchWrapper For listsRoute.get works');
       const lists = await ListModel.find({ _userId: req.userId });
       res.send(lists);
 
@@ -50,7 +49,6 @@ listsRoute.patch(
     );
 
     if(!updatedList) throw new appError('This list is not exist.', 404, true, 'toastr');
-    // throw new GeneralInvalidDataError('This list is not exist.');
 
     res.send(updatedList);
   })
@@ -74,7 +72,6 @@ listsRoute.delete(
     );
 
     if(!deletedDocument) throw new appError('This list is not exist.', 404, true, 'toastr');
-    // throw new GeneralInvalidDataError('This list is not exist.');
 
     res.send(deletedDocument);
   })
@@ -112,21 +109,4 @@ function validateDeleteListParamsJoi(paramsData){
 
 module.exports = listsRoute;
 
-/* 
-function validatePatchListJoi(comingData){
-  const paramsSchema =  Joi.object().keys({
-    id: Joi.objectId().required()
-  })
 
-  const bodySchema = Joi.object().keys({
-    title: Joi.string().min(1).max(50).required(),
-  })
-
-  const schema = Joi.object({
-    params: paramsSchema,
-    body: bodySchema
-  }).unknown(true);
-
-  return schema.validate(comingData);
-}
-*/

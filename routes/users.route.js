@@ -11,7 +11,6 @@ usersRoute.post(
   '/signUp',  
   joiValidateBodyMiddle(validatePostSingUpBodyUser),
   tryCatchWrapper(async (req, res) => {
-    console.log('1- sign Up works');
     const newUserDocument = new UserModel(req.body);
 
     const userDocumentFromDB = await newUserDocument.save();
@@ -20,7 +19,6 @@ usersRoute.post(
 
     const JWTAccessToken = await newUserDocument.generateAccessAuthToken();
 
-    console.log('2- sign Up works');
     res.set({
       "X-refresh-token": refreshToken, 
       "X-access-token": JWTAccessToken
@@ -55,7 +53,6 @@ usersRoute.get(
   '/getNewAccessToken', 
   verifyRefreshToken, 
   tryCatchWrapper(async (req, res) => {
-    console.log('getNewAccessToken works.');
     const JWTToken = await req.userDocumentObj.generateAccessAuthToken();
     res.header('X-access-token', JWTToken).send({ JWTToken });
   })
@@ -81,4 +78,3 @@ function validatePostSingInBodyUser(bodyData){
 
 module.exports = usersRoute;
 
-//=> Check the unnecessary imports and remove.
