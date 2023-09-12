@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
-const GeneralInvalidDataError = require('../errors/generalInvalidData');
 const appError = require('../errors/appError');
 
 const JWTSecret = '1234554321asdfggfdsa0plmkoij987'; //=> LATER: SHOULD CHANGE TO ENV

@@ -1,8 +1,12 @@
 const appError = require("../errors/appError");
+const handledErrorsLogger = require("../logs/functions/handledErrorsLogger");
 
 module.exports = (error, req, res, next) => {
+  handledErrorsLogger.error(error.message);
   console.log('------------------------------------------------------');
   console.log('here: ', error);
+  console.log('here: ', error.message);
+  console.log('here: ', typeof(error));
   console.log('------------------------------------------------------');
 
   if(error.code == 11000 ) {
@@ -23,8 +27,11 @@ module.exports = (error, req, res, next) => {
     });
   }
 
-  console.log('Here Two Not InstanceOf', error);
   return res.status(500).json({
     errorMessage: 'Something went wrong.', 
-  });;
+  });
+
+
 }
+
+//=> IMPO: turn  the server after a unknown problem
