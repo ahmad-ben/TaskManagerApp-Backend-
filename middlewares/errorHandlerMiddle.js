@@ -33,5 +33,3 @@ module.exports = (error, req, res, next) => {
 
 
 }
-
-//=> IMPO: turn  the server after a unknown problem

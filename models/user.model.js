@@ -3,8 +3,9 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const appError = require('../errors/appError');
+const { log } = require('console');
 
-const JWTSecret = '1234554321asdfggfdsa0plmkoij987'; //=> LATER: SHOULD CHANGE TO ENV
+const JWTSecret = process.env.JWT_SECRET_KEY; 
 
 const userSchema = mongoose.Schema(
   {
@@ -83,7 +84,7 @@ const userSchema = mongoose.Schema(
           return new Promise((res, rej) => {
             jwt.sign(
                 {_id: this._id },
-                JWTSecret, //=> LATER: config.get('jwtPrivateKey'),
+                JWTSecret,
                 { expiresIn: '15s' }, //=> LATER: Should Be Less Than This Just For Test 
                 (err, encodedToken) => {
                   if(err) throw new appError('Generate access token failed.', 500, true, 'toastr', 1);
@@ -118,6 +119,21 @@ const userSchema = mongoose.Schema(
 );
 
 userSchema.pre('save', async function (next) {
+  console.log('                                                   ');
+  console.log('                                                   ');
+  console.log('                                                   ');
+  console.log('                                                   ');
+  console.log('PRE WORKS-------------------------------------------');
+
+    console.log('This value, document obj: ', this);
+    console.log('This value, document obj: ', this.isModified('password'));
+    console.log('This value, document obj: ', this.password);
+
+  console.log('PRE WORKS-------------------------------------------');
+  console.log('                                                   ');
+  console.log('                                                   ');
+  console.log('                                                   ');
+  console.log('                                                   ');
 
   if(!this.isModified('password')) return next();
 

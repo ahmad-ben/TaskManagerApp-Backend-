@@ -1,9 +1,12 @@
 const mongoose = require('mongoose');
-const errorHandlerMiddle = require('../middlewares/errorHandlerMiddle');
 const { response } = require('express');
 const unhandledErrorsLogger = require('../logs/functions/unhandledErrorsLogger');
 
 module.exports = (server) => {
+  let dbUrl;
+  if(process.env.NODE_ENV == 'development'){
+    dbUrl = 'mongodb://127.0.0.1:27017/TaskManager'
+  }else port = process.env.DATABASE_URL;
   mongoose.connect('mongodb://127.0.0.1:27017/TaskManager') 
     .then(() => { 
       console.log('Connect To MongoDB Successfully :)');
@@ -15,7 +18,7 @@ module.exports = (server) => {
       console.log(ex);
       unhandledErrorsLogger.error(ex.message);
       // server.close(() => process.exit(1)); =>IMPO: In deployment.
-    }) //=> IMPO: If i remove this the on -unhandledRejection- receive the error but the app still crashed ??
+    }) 
 }
 
 

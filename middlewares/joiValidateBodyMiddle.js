@@ -9,5 +9,3 @@ module.exports = (validateFunction) => {
     next();
   }
 }
-
-//=> IMPO: Like Here! The Thrown Of Error Work Properly

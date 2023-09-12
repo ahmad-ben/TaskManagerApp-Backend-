@@ -1,10 +1,8 @@
 const express = require('express');
-const verifyRefreshToken = require('../middlewares/verifyRefreshToken');
+const verifyRefreshToken = require('../middlewares/verifyRefreshTokenMiddle');
 const { UserModel } = require('../models');
 const Joi = require('joi');
-const joiValidateMiddle = require('../middlewares/joiValidateMiddle');
 const tryCatchWrapper = require('../utils/tryCatchWrapper');
-const mongoose = require('mongoose');
 const joiValidateBodyMiddle = require('../middlewares/joiValidateBodyMiddle');
 
 const usersRoute = express.Router();
@@ -13,6 +11,7 @@ usersRoute.post(
   '/signUp',  
   joiValidateBodyMiddle(validatePostSingUpBodyUser),
   tryCatchWrapper(async (req, res) => {
+    console.log('1- sign Up works');
     const newUserDocument = new UserModel(req.body);
 
     const userDocumentFromDB = await newUserDocument.save();
@@ -21,6 +20,7 @@ usersRoute.post(
 
     const JWTAccessToken = await newUserDocument.generateAccessAuthToken();
 
+    console.log('2- sign Up works');
     res.set({
       "X-refresh-token": refreshToken, 
       "X-access-token": JWTAccessToken
@@ -38,7 +38,7 @@ usersRoute.post(
     
     const userDocumentFromDB = await UserModel.findByCredentials(email, password);
 
-    const refreshToken = await userDocumentFromDB.createSession(); //=> LATER: Check This Should Be Here Or Not??
+    const refreshToken = await userDocumentFromDB.createSession();
 
     const JWTAccessToken = await userDocumentFromDB.generateAccessAuthToken();
 
@@ -80,3 +80,5 @@ function validatePostSingInBodyUser(bodyData){
 }
 
 module.exports = usersRoute;
+
+//=> Check the unnecessary imports and remove.

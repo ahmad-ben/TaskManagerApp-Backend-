@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const appError = require("../errors/appError");
 
-const JWTSecret = '1234554321asdfggfdsa0plmkoij987'; //=> LATER: SHOULD CHANGE TO ENV
+const JWTSecret = process.env.JWT_SECRET_KEY; 
 
 module.exports = verifyJWTMiddle = (req, res, next) => {
   console.log('Verify JWT Middle Works!.');

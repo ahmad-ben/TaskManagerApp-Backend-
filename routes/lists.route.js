@@ -2,7 +2,6 @@ const express = require('express');
 const verifyJWTMiddle = require('../middlewares/verifyJWT.middle');
 const { TaskModel, ListModel } = require('../models/index');
 const Joi = require('joi');
-const joiValidateMiddle = require('../middlewares/joiValidateMiddle');
 const tryCatchWrapper = require('../utils/tryCatchWrapper');
 const joiValidateBodyMiddle = require('../middlewares/joiValidateBodyMiddle');
 const joiValidateParamsMiddle = require('../middlewares/joiValidateParamsMiddle');
@@ -131,6 +130,3 @@ function validatePatchListJoi(comingData){
   return schema.validate(comingData);
 }
 */
-
-
-//=> schema, comingData
