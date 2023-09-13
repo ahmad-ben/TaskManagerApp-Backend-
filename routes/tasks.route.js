@@ -32,7 +32,7 @@ tasksRoute.get(
   ], 
   tryCatchWrapper( async (req, res) => {
     const oneTaskList = await TaskModel.findOne({
-      _listId: listDocumentDB._id,
+      _listId: req.listDocumentDB._id,
       _id: req.params.taskId,
     });
 
@@ -57,7 +57,7 @@ tasksRoute.post(
   tryCatchWrapper(async (req, res) => {
     const newTask = await TaskModel({
       title: req.body.title,
-      _listId: listDocumentDB._id,
+      _listId: req.listDocumentDB._id,
     })
 
     await newTask.save();
@@ -75,7 +75,7 @@ tasksRoute.patch(
   ], 
   tryCatchWrapper(async (req, res) => {
     const updatedTaskDocument = await TaskModel.findOneAndUpdate(
-      { _id: req.params.taskId, _listId: listDocumentDB._id }, 
+      { _id: req.params.taskId, _listId: req.listDocumentDB._id }, 
       req.body, 
       { new: true }
     );
@@ -99,7 +99,7 @@ tasksRoute.delete(
   tryCatchWrapper(async (req, res) => {
     const deletedTaskDocument = await TaskModel.findOneAndDelete({
       _id: req.params.taskId,
-      _listId: listDocumentDB._id
+      _listId: req.listDocumentDB._id
     });
 
     if(!deletedTaskDocument) throw new appError(
