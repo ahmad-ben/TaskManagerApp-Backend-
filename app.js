@@ -22,6 +22,8 @@ if(process.env.NODE_ENV == 'development'){
 
 const server = app.listen(port);
 
+
+require("./components/deployMiddle")(app);
 require("./components/generalMiddle")(app);
 require("./components/routes")(app);
 require("./components/errorHandlerMiddle")(app);
