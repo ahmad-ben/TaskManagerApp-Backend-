@@ -136,7 +136,7 @@ function validatePostTaskParamsJoi(paramsData){
 
 function validatePostTaskBodyJoi(bodyData){
   const bodySchema =  Joi.object({
-    title:  Joi.string().min(1).max(50).required()
+    title:  Joi.string().min(1).max(100).required()
   });
 
   return bodySchema.validate(bodyData);
@@ -153,7 +153,7 @@ function validatePatchTaskParamsJoi(paramsData){
 
 function validatePatchTaskBodyJoi(bodyData){
   const bodySchema =  Joi.object({
-    title:  Joi.string().min(1).max(50),
+    title:  Joi.string().min(1).max(100),
     completed: Joi.boolean()
   }).or('title', 'completed');
 

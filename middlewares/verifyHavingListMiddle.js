@@ -1,4 +1,5 @@
-const { ListModel }  = require("../models/index")
+const appError = require("../errors/appError");
+const { ListModel }  = require("../models/index");
 
 module.exports = async (req, res, next) => {
   const listDocumentDB = await ListModel.findByIdAndUserId(req.params.listId, req.userId);
