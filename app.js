@@ -17,7 +17,7 @@ process
 
 let port;
 if(process.env.NODE_ENV == 'development'){
-  port = 80
+  port = 3000
 }else port = process.env.PORT;
 
 const server = app.listen(port);
@@ -29,3 +29,5 @@ require("./components/routes")(app);
 require("./components/errorHandlerMiddle")(app);
 require("./components/database")(server);
 require("./components/validation")();
+
+module.exports = app;
