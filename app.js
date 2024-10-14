@@ -25,7 +25,6 @@ const server = app.listen(port);
 
 require("./components/deployMiddle")(app);
 require("./components/generalMiddle")(app);
-app.use('/tests', express.Router().get("/", (re, res) => res.send("Hi.")));
 require("./components/routes")(app);
 require("./components/errorHandlerMiddle")(app);
 require("./components/database")(server);
