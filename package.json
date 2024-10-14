@@ -11,5 +11,8 @@
     "jsonwebtoken": "~9.0.1",
     "mongoose": "~7.4.3",
     "winston": "~3.10.0"
+  },
+  "scripts": {
+    "vercel-build": "echo hello"
   }
 }
