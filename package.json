@@ -12,6 +12,9 @@
     "mongoose": "~7.4.3",
     "winston": "~3.10.0"
   },
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "vercel-build": "echo hello"
   }
