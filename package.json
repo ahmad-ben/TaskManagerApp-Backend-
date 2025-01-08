@@ -16,6 +16,7 @@
     "node": "18.x"
   },
   "scripts": {
-    "vercel-build": "echo hello"
+    "vercel-build": "echo hello",
+    "start": "node app.js"
   }
 }
