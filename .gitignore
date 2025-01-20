@@ -39,6 +39,8 @@ Thumbs.db
 # Note files
 notes
 
-#Environment variables
+# Environment variables
 .env
-.vercel
+
+# Local Data
+Local Data
