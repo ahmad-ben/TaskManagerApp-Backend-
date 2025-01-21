@@ -26,6 +26,10 @@ This app isn't a simple reproduction of the playlist's content. I expanded on th
 - **Database**: MongoDB  
 - **Hosting**: Render
 
+## 🔗 Frontend Repository  
+
+The frontend code for this project can be found here: [TaskManagerApp-Frontend](https://github.com/ahmad-ben/TaskManagerApp-Frontend-).
+
 ## 🌐 Connect With Me  
 
 Feel free to connect with me on [LinkedIn](https://www.linkedin.com/in/ahmedbenchakhter/) to discuss this project or any other topics related to development!  
