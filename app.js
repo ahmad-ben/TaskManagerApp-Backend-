@@ -16,12 +16,11 @@ process
   })
 
 let port;
-if(process.env.NODE_ENV == 'development'){
-  port = 3000
-}else port = process.env.PORT;
+
+if(process.env.NODE_ENV == 'development') port = 3000;
+else port = process.env.PORT;
 
 const server = app.listen(port);
-
 
 require("./components/deployMiddle")(app);
 require("./components/generalMiddle")(app);

@@ -5,8 +5,8 @@ const Joi = require('joi');
 const tryCatchWrapper = require('../utils/tryCatchWrapper');
 const joiValidateParamsMiddle = require('../middlewares/joiValidateParamsMiddle');
 const joiValidateBodyMiddle = require('../middlewares/joiValidateBodyMiddle');
-const appError = require('../errors/appError');
 const verifyHavingListMiddle = require('../middlewares/verifyHavingListMiddle');
+const appError = require('../errors/appError');
 
 const tasksRoute = express.Router({ mergeParams: true });
 
@@ -90,6 +90,26 @@ tasksRoute.patch(
 )
 
 tasksRoute.delete(
+  '/', 
+  [
+    verifyJWTMiddle, 
+    joiValidateParamsMiddle(validateDeleteTasksParamsJoi),
+    verifyHavingListMiddle
+  ], 
+  tryCatchWrapper(async (req, res) => {
+    const deletedTasksDocument = await TaskModel.deleteMany({
+      _listId: req.listDocumentDB._id
+    });
+
+    res.json({
+      status: 'success',
+      deletedCount: deletedTasksDocument.deletedCount,
+      message: `${deletedTasksDocument.deletedCount} task(s) deleted successfully.`
+    });
+  })
+)
+
+tasksRoute.delete(
   '/:taskId', 
   [
     verifyJWTMiddle, 
@@ -112,9 +132,12 @@ tasksRoute.delete(
 )
 
 function validateGetTasksParamsJoi(paramsData){
-  const paramsSchema =  Joi.object({
-    listId: Joi.objectId().required(),
-  })
+  const paramsSchema =  Joi.object({listId: Joi.objectId().required()})  //?? Duplicate
+  return paramsSchema.validate(paramsData);
+}
+
+function validateDeleteTasksParamsJoi(paramsData){
+  const paramsSchema =  Joi.object({listId: Joi.objectId().required()})  //?? Duplicate
   return paramsSchema.validate(paramsData);
 }
 
@@ -127,10 +150,7 @@ function validateGetTaskParamsJoi(paramsData){
 }
 
 function validatePostTaskParamsJoi(paramsData){
-  const paramsSchema =  Joi.object({
-    listId: Joi.objectId().required()
-  });
-
+  const paramsSchema =  Joi.object({listId: Joi.objectId().required()}); //?? Duplicate just one with a proper name
   return paramsSchema.validate(paramsData);
 }
 

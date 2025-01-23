@@ -1,6 +1,3 @@
 const errorHandlerMiddle = require("../middlewares/errorHandlerMiddle");
 
-module.exports = (app) => {
-  app.use(errorHandlerMiddle);
-}
-
+module.exports = (app) => app.use(errorHandlerMiddle);
