@@ -16,7 +16,10 @@
     "node": "18.x"
   },
   "scripts": {
-    "vercel-build": "echo hello",
-    "start": "node app.js"
+    "start": "node app.js",
+    "test": "jest --watchAll"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }

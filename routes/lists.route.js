@@ -1,5 +1,5 @@
 const express = require('express');
-const verifyJWTMiddle = require('../middlewares/verifyJWT.middle');
+const verifyJWTMiddle = require('../middlewares/verifyJWTMiddle');
 const { TaskModel, ListModel } = require('../models/index');
 const Joi = require('joi');
 const tryCatchWrapper = require('../utils/tryCatchWrapper');
