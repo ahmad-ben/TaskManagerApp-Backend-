@@ -19,7 +19,7 @@ listsRoute.get('/', verifyJWTMiddle,
 
 listsRoute.post(
   '/', 
-  [verifyJWTMiddle, joiValidateBodyMiddle(validatePostListBodyJoi)],
+  [verifyJWTMiddle, joiValidateBodyMiddle(validateBodyJoi)],
   tryCatchWrapper( async (req, res) => {
     const title = req.body.title;
     const _userId = req.userId;
@@ -34,8 +34,8 @@ listsRoute.patch(
   '/:id', 
   [
     verifyJWTMiddle, 
-    joiValidateParamsMiddle(validatePatchListParamsJoi),
-    joiValidateBodyMiddle(validatePatchListBodyJoi),
+    joiValidateParamsMiddle(validateParamsJoi),
+    joiValidateBodyMiddle(validateBodyJoi),
   ],
   tryCatchWrapper( async (req, res) => {
     const _userId = req.userId;
@@ -58,7 +58,7 @@ listsRoute.delete(
   '/:id', 
   [
     verifyJWTMiddle, 
-    joiValidateParamsMiddle(validateDeleteListParamsJoi)
+    joiValidateParamsMiddle(validateParamsJoi)
   ], 
   tryCatchWrapper( async (req, res) => {
     await TaskModel.deleteMany({ _listId: req.params.id });
@@ -71,42 +71,24 @@ listsRoute.delete(
       { new: true }
     );
 
-    if(!deletedDocument) throw new appError('This list is not exist.', 404, true, 'toastr');
+    if(!deletedDocument) 
+      throw new appError('This list is not exist.', 404, true, 'toastr');
 
     res.send(deletedDocument);
   })
 );
 
-function validatePostListBodyJoi(bodyData){
-  const bodySchema = Joi.object({
-    title: Joi.string().min(1).max(50).required()
-  })
-  return bodySchema.validate(bodyData);
-}
-
-function validatePatchListBodyJoi(bodyData){
-  const bodySchema = Joi.object({
-    title: Joi.string().min(1).max(50).required(),
-  });
+function validateBodyJoi(bodyData){
+  const bodySchema = 
+    Joi.object({title: Joi.string().min(1).max(50).required()}).required();
 
   return bodySchema.validate(bodyData);
 }
 
-function validatePatchListParamsJoi(paramsData){
-  const paramsSchema = Joi.object({
-    id: Joi.objectId().required()
-  });
+function validateParamsJoi(paramsData){
+  const paramsSchema = Joi.object({id: Joi.objectId().required()}).required();
 
   return paramsSchema.validate(paramsData);
 }
 
-function validateDeleteListParamsJoi(paramsData){
-  const paramsSchema =  Joi.object({
-    id: Joi.objectId().required(),
-  })
-  return paramsSchema.validate(paramsData);
-}
-
-module.exports = listsRoute;
-
-
+module.exports = {listsRoute, validateBodyJoi, validateParamsJoi};

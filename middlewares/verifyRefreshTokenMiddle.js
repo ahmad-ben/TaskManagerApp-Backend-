@@ -28,6 +28,5 @@ module.exports = verifyRefreshToken =   async (req, res, next) => {
 
   if (isSessionValid) return next();
   next(new appError('The session does not exist or is expired.', 401, true, 'toastr'));
-
 }
 

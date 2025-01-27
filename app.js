@@ -24,9 +24,9 @@ const server = app.listen(port);
 
 require("./components/deployMiddle")(app);
 require("./components/generalMiddle")(app);
+require("./components/validation")();
 require("./components/routes")(app);
 require("./components/errorHandlerMiddle")(app);
 require("./components/database")(server);
-require("./components/validation")();
 
 module.exports = app;

@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "node app.js",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll --verbose"
   },
   "devDependencies": {
     "jest": "^29.7.0"
