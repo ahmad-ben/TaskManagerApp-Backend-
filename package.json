@@ -17,9 +17,11 @@
   },
   "scripts": {
     "start": "node app.js",
-    "test": "jest --watchAll --verbose"
+    "dev": "set NODE_ENV=development&& nodemon app.js",
+    "test": "set NODE_ENV=testing&& nodemon app.js&& jest --watchAll --verbose"
   },
   "devDependencies": {
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
   }
 }

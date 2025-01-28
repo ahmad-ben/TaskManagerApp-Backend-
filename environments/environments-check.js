@@ -11,5 +11,5 @@ module.exports = () => {
     if(envVar == undefined) 
       throw Error(`The environment variable '${envVarsNamesArray[envVarIndex]}' is undefined.`)
   }); 
-
 }
+// ?? Make the check process better.

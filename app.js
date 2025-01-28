@@ -1,5 +1,7 @@
-require("dotenv").config();
-require("./components/environmentVariables")();
+const environmentsPath = `./environments/.env.${process.env.NODE_ENV || "development"}`;
+
+require("dotenv").config( { path: environmentsPath } );
+require("./environments/environments-check")();
 
 const express = require("express");
 const unhandledErrorsLogger = require("./logs/functions/unhandledErrorsLogger");
@@ -15,12 +17,7 @@ process
     server.close(() => process.exit(1));
   })
 
-let port;
-
-if(process.env.NODE_ENV == 'development') port = 3000;
-else port = process.env.PORT;
-
-const server = app.listen(port);
+const server = app.listen(process.env.PORT);
 
 require("./components/deployMiddle")(app);
 require("./components/generalMiddle")(app);
