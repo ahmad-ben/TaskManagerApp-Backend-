@@ -16,9 +16,12 @@
     "node": "18.x"
   },
   "scripts": {
-    "start": "node app.js",
+    "start": "nodemon app.js",
     "dev": "set NODE_ENV=development&& nodemon app.js",
-    "test": "set NODE_ENV=testing&& nodemon app.js&& jest --watchAll --verbose"
+    "test_db": "mongod --port 7001",
+    "test_env": "set NODE_ENV=testing&& nodemon app.js",
+    "test": "jest --watchAll --verbose",
+    "posttest": "jest --coverage --verbose"
   },
   "devDependencies": {
     "jest": "^29.7.0",

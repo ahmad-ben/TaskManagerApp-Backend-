@@ -26,4 +26,4 @@ require("./components/errorHandlerMiddle")(app);
 require("./components/database")(server);
 require("./components/validation")();
 
-module.exports = app;
+module.exports = server;

@@ -2,7 +2,7 @@ const express = require('express');
 
 const {listsRoute} = require('../routes/lists.route');
 const tasksRoute = require('../routes/tasks.route');
-const usersRoute = require('../routes/users.route');
+const {usersRoute} = require('../routes/users.route');
 const testRoute = require("../routes/test.route");
 
 module.exports = (app) => {
