@@ -5,8 +5,6 @@ const bcrypt = require('bcrypt');
 const appError = require('../errors/appError');
 const { log } = require('console');
 
-const JWTSecret = process.env.JWT_SECRET_KEY; 
-
 const userSchema = mongoose.Schema(
   {
 
@@ -82,7 +80,7 @@ const userSchema = mongoose.Schema(
           return new Promise((res, rej) => {
             jwt.sign(
                 {_id: this._id },
-                JWTSecret,
+                process.env.JWT_SECRET_KEY,
                 { expiresIn: '15min' },  
                 (err, encodedToken) => {
                   if(err) throw new appError('Generate access token failed.', 500, true, 'toastr', 1);
@@ -156,5 +154,3 @@ const generateRefreshTokenExpiryTime = () => {
 const UserModel = mongoose.model('user', userSchema);
 
 module.exports = UserModel;
-
-

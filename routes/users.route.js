@@ -31,7 +31,7 @@ usersRoute.post(
   '/signIn', 
   joiValidateBodyMiddle(validatePostSingInBodyUser),
   tryCatchWrapper(async (req, res) => {
-    const email = req.body.email;
+    const email = req.body.email; //?? One line obj extract.
     const password = req.body.password;
     
     const userDocumentFromDB = await UserModel.findByCredentials(email, password);
