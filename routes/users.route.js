@@ -9,7 +9,7 @@ const usersRoute = express.Router();
 
 usersRoute.post(
   '/signUp',  
-  joiValidateBodyMiddle(validatePostSingUpBodyUser),
+  joiValidateBodyMiddle(validateSingUpAndInBodyUser),
   tryCatchWrapper(async (req, res) => {
     const newUserDocument = new UserModel(req.body);
 
@@ -29,7 +29,7 @@ usersRoute.post(
 
 usersRoute.post(
   '/signIn', 
-  joiValidateBodyMiddle(validatePostSingInBodyUser),
+  joiValidateBodyMiddle(validateSingUpAndInBodyUser),
   tryCatchWrapper(async (req, res) => {
     const email = req.body.email; //?? One line obj extract.
     const password = req.body.password;
@@ -58,7 +58,7 @@ usersRoute.get(
   })
 );
 
-function validatePostSingUpBodyUser(bodyData){
+function validateSingUpAndInBodyUser(bodyData){
   const bodySchema = Joi.object({
     email: Joi.string().email().min(10).max(255).required(),
     password: Joi.string().min(6).max(20).required(),
@@ -67,16 +67,4 @@ function validatePostSingUpBodyUser(bodyData){
   return bodySchema.validate(bodyData);
 }
 
-function validatePostSingInBodyUser(bodyData){
-  const bodySchema = Joi.object({
-    email: Joi.string().email().min(10).max(255).required(),
-    password: Joi.string().min(6).max(20).required(),
-  });
-
-  return bodySchema.validate(bodyData);
-}
-//?? Both are the same: validatePostSingUpBodyUser && validatePostSingInBodyUser.
-//?? How about put all the joi validators functions in one module -file-.
-
-module.exports = {usersRoute, validatePostSingInBodyUser, validatePostSingUpBodyUser};
-
+module.exports = {usersRoute, validateSingUpAndInBodyUser};

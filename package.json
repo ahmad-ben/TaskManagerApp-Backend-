@@ -21,7 +21,6 @@
     "test_db": "mongod --port 7001",
     "test_env": "set NODE_ENV=testing&& nodemon app.js",
     "test": "jest --watchAll --verbose",
-    "posttest": "jest --coverage --verbose",
     "test_coverage": "jest --coverage --verbose" 
   },
   "devDependencies": {

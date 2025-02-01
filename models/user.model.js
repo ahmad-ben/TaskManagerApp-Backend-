@@ -48,8 +48,8 @@ const userSchema = mongoose.Schema(
 
       async findByCredentials(email, password){
 
-        const userDocument = await this.findOne({ email });    
-    
+        const userDocument = await this.findOne({ email });   
+
         if(!userDocument) throw new appError('This account is not registered, sign up first.', 404, false, 'message');
     
         const compareResult = await bcrypt.compare(password, userDocument.password);
