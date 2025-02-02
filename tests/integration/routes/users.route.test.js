@@ -20,18 +20,18 @@ describe.only("/users", () => {
         false, "", {email: "a"}, {email: "test@gamil.com", password: "123"}, undefined
       ];
   
-      for(const invalidVal of invalidVals){
-        const result = await request(server).post("/users/signUp").send(undefined);
-        expect(result).toHaveProperty("error")
+      for(const invalidVal of invalidVals){ 
+        const result = await request(server).post("/users/signUp").send(invalidVal); 
+        expect(result).toHaveProperty("error");
         expect(result.status).toBe(400);
       }
 
-      //Test with catch is throwing!!
-      await expect(async () => {
-        await UserModel.findByCredentials(invalidVals[3].email)
-      }).rejects.toThrowError(appError); 
-      //Custom function/class for this kind of checks?
-      //Check the error status and mess
+      try{
+        await UserModel.findByCredentials(invalidVals[3].email);
+      }catch(error){
+        expect(error.statusCode).toBe(404);
+        expect(error.message).toContain('This account is not registered');
+      }; 
     })
 
     it("Should register the user if its info is valid.", async () => {
