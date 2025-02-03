@@ -5,7 +5,7 @@ module.exports = (app) => {
   app.use(express.json());
   app.use(cors({
     origin: "*",
-    exposedHeaders: ['X-access-token', 'X-refresh-token'],
+    exposedHeaders: ['x-access-token', 'x-refresh-token'],
   }))
 }
 

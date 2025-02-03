@@ -1,8 +1,9 @@
 const winston = require("winston");
+const { stack } = require("../../routes/tasks.route");
 
 module.exports = winston.createLogger({
   level: 'error',
-  format: winston.format.json(),
+  format: winston.format.errors({stack: true}),
   handleExceptions: true,
   handleRejections: true,
 

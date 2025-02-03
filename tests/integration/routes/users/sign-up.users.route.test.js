@@ -1,21 +1,20 @@
 const request = require("supertest");
-const {UserModel} = require("../../../models/index");
-const appError = require("../../../errors/appError");
+const {UserModel} = require("../../../../models/index");
 let server;
 
-describe.only("/users", () => {
+describe("/users", () => {
   beforeEach(() => {
     process.env.NODE_ENV = "testing"
-    server = require("../../../app");
+    server = require("../../../../app");
   });
 
   afterEach(async () => {
     await UserModel.deleteMany({})
-    server.close();
+    await server.close();
   });
 
   describe("POST /signUp", () => {
-    it("Should ... the user if the user info isn't valid.", async () => {
+    it("Should return an error if the user info isn't valid.", async () => {
       const invalidVals = [
         false, "", {email: "a"}, {email: "test@gamil.com", password: "123"}, undefined
       ];
@@ -26,20 +25,8 @@ describe.only("/users", () => {
         expect(result.status).toBe(400);
       }
 
-      try{
-        await UserModel.findByCredentials(invalidVals[3].email);
-      }catch(error){
-        expect(error.statusCode).toBe(404);
-        expect(error.message).toContain('This account is not registered');
-      }; 
-    })
-
-    it("Should register the user if its info is valid.", async () => {
-      const payload = {email: "test@test.com", password: "123456"};
-      const res = await request(server).post("/users/signUp").send(payload);
-      const userDocumentFromDB = await UserModel.findByCredentials(payload.email, payload.password);
-      expect(res.status).toBe(200);
-      expect(userDocumentFromDB).toHaveProperty("email", payload.email);
+      const res = await UserModel.findOne({email: invalidVals[3].email});
+      expect(res).toBe(null);
     })
 
     it("Should throw an error if the user already registered.", async () => {
@@ -49,6 +36,20 @@ describe.only("/users", () => {
 
       expect(res.status).toBe(400);
       expect(res.text).toContain("This following email is already registered");
+    })
+
+    it("Should register the user if its info is valid.", async () => {
+      const payload = {email: "test@test.com", password: "123456"};
+      const {status, header, body} = await request(server).post("/users/signUp").send(payload);
+      const userDocumentFromDB = await UserModel.findByCredentials(payload.email, payload.password);
+
+      expect(userDocumentFromDB).toHaveProperty("email", payload.email);
+      expect(status).toBe(200);
+      expect(header).toMatchObject({
+        "x-refresh-token": expect.any(String), 
+        "x-access-token": expect.any(String)
+      });
+      expect(body).toHaveProperty("email", payload.email);
     })
   })
 })

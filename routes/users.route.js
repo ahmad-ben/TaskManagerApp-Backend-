@@ -20,8 +20,8 @@ usersRoute.post(
     const JWTAccessToken = await newUserDocument.generateAccessAuthToken();
 
     res.set({
-      "X-refresh-token": refreshToken, 
-      "X-access-token": JWTAccessToken
+      "x-refresh-token": refreshToken, 
+      "x-access-token": JWTAccessToken
     }).send(userDocumentFromDB); 
 
   })
@@ -31,9 +31,8 @@ usersRoute.post(
   '/signIn', 
   joiValidateBodyMiddle(validateSingUpAndInBodyUser),
   tryCatchWrapper(async (req, res) => {
-    const email = req.body.email; //?? One line obj extract.
-    const password = req.body.password;
-    
+    const {email, password} = req.body;
+
     const userDocumentFromDB = await UserModel.findByCredentials(email, password);
 
     const refreshToken = await userDocumentFromDB.createSession();
@@ -41,10 +40,9 @@ usersRoute.post(
     const JWTAccessToken = await userDocumentFromDB.generateAccessAuthToken();
 
     res.set({
-      "X-refresh-token": refreshToken, 
-      "X-access-token": JWTAccessToken
+      "x-refresh-token": refreshToken, 
+      "x-access-token": JWTAccessToken
     }).send(userDocumentFromDB); 
-
   })
 
 )
@@ -54,7 +52,7 @@ usersRoute.get(
   verifyRefreshToken, 
   tryCatchWrapper(async (req, res) => {
     const JWTToken = await req.userDocumentObj.generateAccessAuthToken();
-    res.header('X-access-token', JWTToken).send({ JWTToken });
+    res.header('x-access-token', JWTToken).send({ JWTToken });
   })
 );
 

@@ -3,9 +3,8 @@ const { UserModel } = require("../models");
 const appError = require("../errors/appError");
 
 module.exports = verifyRefreshToken =   async (req, res, next) => {
-
   const userId = req.header('userId');
-  const refreshToken = req.header('X-refresh-token');
+  const refreshToken = req.header('x-refresh-token');
   let isSessionValid = false;
 
   if(
