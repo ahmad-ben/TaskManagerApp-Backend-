@@ -12,7 +12,7 @@ module.exports = (error, req, res, next) => {
     });
   }
 
-  if(error instanceof appError ) {
+  if(error instanceof appError) {
     return res.status(error.statusCode).json({
       message: error.message,
       shouldNavigate: error.shouldNavigate,

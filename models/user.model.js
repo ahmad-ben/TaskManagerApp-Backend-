@@ -64,7 +64,6 @@ const userSchema = mongoose.Schema(
 
         if(expiresAt > secondsSinceEpoch) return false;
         return true;
-
       }
 
     },
@@ -142,7 +141,6 @@ const saveSessionToDatabase = async (userDocument, refreshToken) => {
 
   await userDocument.save();
   return refreshToken;
-
 }; 
 
 const generateRefreshTokenExpiryTime = () => {
