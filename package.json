@@ -21,7 +21,7 @@
     "run_test_db": "mongod --port 7001",
     "test_env": "set NODE_ENV=testing&& nodemon app.js",
     "test": "jest --watchAll --verbose --maxWorkers=1",
-    "test_path": "jest --watchAll --verbose --maxWorkers=1 --testPathPattern=tests/integration/routes/users/",
+    "test_path": "jest --watchAll --verbose --maxWorkers=1 --testPathPattern=tests/integration/routes/lists/",
     "test_coverage": "jest --coverage --verbose --maxWorkers=1" 
   },
   "devDependencies": {
