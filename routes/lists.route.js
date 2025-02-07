@@ -13,7 +13,6 @@ listsRoute.get('/', verifyJWTMiddle,
   tryCatchWrapper( async (req, res) => {
       const lists = await ListModel.find({ _userId: req.userId });
       res.send(lists);
-
   })
 )
 

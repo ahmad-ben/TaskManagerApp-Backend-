@@ -22,6 +22,6 @@ module.exports = (error, req, res, next) => {
   }
 
   return res.status(500).json({
-    errorMessage: 'Something went wrong.', 
+    errorMessage: 'Something went wrong.', // why it's errorMessage not Message only.
   });
 }
