@@ -1,7 +1,7 @@
 const request = require("supertest");
 const {UserModel} = require("../../../../models/index");
 const  mongoose = require("mongoose");
-const generateFakeJWT = require("../../../utils/generateFakeJWT");
+const {generateFakeJWT} = require("../../../utils/index");
 let server;
 
 describe("GET /lists", () => {

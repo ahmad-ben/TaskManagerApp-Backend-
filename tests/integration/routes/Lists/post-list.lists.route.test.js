@@ -1,8 +1,6 @@
 const request = require("supertest");
 const {UserModel} = require("../../../../models/index");
-const  mongoose = require("mongoose");
-const generateFakeJWT = require("../../../utils/generateFakeJWT");
-const { use } = require("../../../../routes/tasks.route");
+const {generateFakeJWT} = require("../../../utils/index");
 let server;
 
 describe("POST /lists", () => {

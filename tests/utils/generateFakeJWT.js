@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-module.exports = (userDocument) => {
+const generateFakeJWT = (userDocument) => {
   return new Promise((res, rej) => {
     jwt.sign(
         {_id: userDocument._id },
@@ -12,4 +12,6 @@ module.exports = (userDocument) => {
         }
       )
   })
-}
+};
+
+module.exports = generateFakeJWT;

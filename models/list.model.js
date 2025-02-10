@@ -16,7 +16,6 @@ const listSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       required: true
     },
-
   },
 
   {
@@ -35,4 +34,4 @@ const listSchema = new mongoose.Schema(
 
 const ListModel = mongoose.model('list', listSchema);
 
-module.exports = ListModel ;
+module.exports = ListModel;

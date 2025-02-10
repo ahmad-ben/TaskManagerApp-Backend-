@@ -1,12 +1,10 @@
 const request = require("supertest");
-const {UserModel} = require("../../../../models/index");
+const {UserModel, ListModel} = require("../../../../models/index");
 const  mongoose = require("mongoose");
 const {generateFakeJWT, registerAUser, addAUserList} = require("../../../utils/index");
-const { use } = require("../../../../routes/tasks.route");
 let server;
 
-describe("PATCH /lists/ID", () => {
-  const newListBody = {"title": "newTitle"};
+describe("DELETE /lists/ID", () => {
   const validId = new mongoose.Types.ObjectId();
   let userDocument, existUserJWT, listInfo, validListId;
 
@@ -20,7 +18,7 @@ describe("PATCH /lists/ID", () => {
 
     // Add a user list.
     listInfo = await addAUserList(server, existUserJWT);
-    validListId = listInfo.body._id;    
+    validListId = listInfo.body._id;     
   });
 
   afterEach(async () => {
@@ -35,8 +33,8 @@ describe("PATCH /lists/ID", () => {
     const invalidJWTs = ["", invalidJWT];
 
     for(const invalidJWT of invalidJWTs){
-      const {status, error} = await request(server).patch(`/lists/${validListId}`)
-        .send(newListBody).set("x-access-token", invalidJWT); 
+      const {status, error} = await request(server).delete(`/lists/${validListId}`)
+        .set("x-access-token", invalidJWT); 
 
       expect(status).toBe(401);
       expect(error).toHaveProperty("message");
@@ -47,46 +45,34 @@ describe("PATCH /lists/ID", () => {
     const invalidListIds = [false, undefined, 12345, "aabbcc"]
 
     for(const invalidListId of invalidListIds){
-      const {status, body} = await request(server).patch(`/lists/${invalidListId}`)
-        .send(newListBody).set("x-access-token", existUserJWT); 
+      const {status, body} = await request(server).delete(`/lists/${invalidListId}`)
+        .set("x-access-token", existUserJWT); 
 
       expect(status).toBe(400);
       expect(body.message).toContain("Invalid url.");
     };
   });
 
-  it("Should return an error if the body isn't valid", async() => {
-    const invalidPayloads = [
-      "", [], false, {}, {"title": ""}, {"title": 12345}, 
-      {"title": "LongTitleThatIsMoreThan50CharactersTheMaximumAllowed."}
-    ];
-
-    for(const invalidPayload of invalidPayloads){
-      const {status, error} = await request(server).patch(`/lists/${validListId}`)
-        .send(invalidPayload).set("x-access-token", existUserJWT); 
-
-      expect(status).toBe(400);
-      expect(error).toHaveProperty("message");
-    }
-  });
-
   it("Should return an error if the list isn't exist", async() => {
-    const {status, body} = await request(server).patch(`/lists/${validId}`)
-      .send(newListBody).set("x-access-token", existUserJWT); 
+    const {status, body} = await request(server).delete(`/lists/${validId}`)
+      .set("x-access-token", existUserJWT); 
 
     expect(status).toBe(404);
     expect(body.message).toContain("This list is not exist.");
   });
 
-  it("Should update and return the list if it's valid and exist", async() => {
-    const {status, body} = await request(server).patch(`/lists/${validListId}`)
-      .send(newListBody).set("x-access-token", existUserJWT); 
+  it("Should delete and return the list if it's valid and exist", async() => {
+    const {status, body} = await request(server).delete(`/lists/${validListId}`)
+      .set("x-access-token", existUserJWT); 
 
     expect(status).toBe(200);
     expect(body).toMatchObject({
       _id: validListId,
-      title: newListBody.title,
       _userId: userDocument.body._id,
     });
+
+    const deletedList = await ListModel.findById(validListId);
+
+    expect(deletedList).toBe(null);
   });
 });
