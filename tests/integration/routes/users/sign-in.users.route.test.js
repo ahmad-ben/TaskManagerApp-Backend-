@@ -1,5 +1,5 @@
 const request = require("supertest");
-const {UserModel} = require("../../../../models/index");
+const {deleteDBData} = require("../../../utils/index");
 let server;
 
 describe("POST /users/signIn", () => {
@@ -10,7 +10,7 @@ describe("POST /users/signIn", () => {
   });
 
   afterEach(async () => {
-    await UserModel.deleteMany({})
+    await deleteDBData();
     await server.close();
   });
 

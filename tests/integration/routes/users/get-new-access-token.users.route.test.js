@@ -1,6 +1,7 @@
 const request = require("supertest");
 const {UserModel} = require("../../../../models/index");
 const  mongoose = require("mongoose");
+const { deleteDBData } = require("../../../utils");
 let server;
 
 describe("GET /users/getNewAccessToken", () => {
@@ -11,7 +12,7 @@ describe("GET /users/getNewAccessToken", () => {
   });
 
   afterEach(async () => {
-    await UserModel.deleteMany({})
+    await deleteDBData();
     await server.close();
   });
 
