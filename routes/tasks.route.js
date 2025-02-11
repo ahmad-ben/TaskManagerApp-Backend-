@@ -133,8 +133,13 @@ tasksRoute.delete(
 
 function validateGetTasksParamsJoi(paramsData){
   const paramsSchema =  Joi.object({listId: Joi.objectId().required()})  //?? Duplicate
+  // console.log("paramsData", paramsData);
+  // console.log("validation result", paramsSchema.validate(paramsData));
+  
   return paramsSchema.validate(paramsData);
 }
+
+// console.log(validateGetTasksParamsJoi(""))
 
 function validateDeleteTasksParamsJoi(paramsData){
   const paramsSchema =  Joi.object({listId: Joi.objectId().required()})  //?? Duplicate

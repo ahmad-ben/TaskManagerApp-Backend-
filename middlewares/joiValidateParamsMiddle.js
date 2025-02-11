@@ -2,6 +2,9 @@ const appError = require("../errors/appError");
 
 module.exports = (validateFunction) => {
   return (req, res, next) => {
+    // console.log(req);
+    // console.log(req.params);
+    
     const { error } = validateFunction(req.params);
 
     if(error){

@@ -1,10 +1,17 @@
 const request = require("supertest");
-const {generateFakeJWT, registerAUser, addAUserList, deleteDBData} = require("../../../utils/index");
-const { ListModel, TaskModel } = require("../../../../models");
-let server;
+const {
+  generateFakeJWT, registerAUser, addAUserList, deleteDBData
+} = require("../../../utils/index");
+const { default: mongoose } = require("mongoose");
+const { patch } = require("../../../../routes/tasks.route");
+const { TaskModel } = require("../../../../models");
 
-describe("GET /tasks", () => {
-  let userDocument, existUserJWT, listInfo, validListId;
+require("../../../../components/validation")(); 
+
+let server, userDocument, existUserJWT, listInfo, validListId, validPath;
+
+describe("GET /lists/LIST_ID/tasks", () => {
+  const validId = new mongoose.Types.ObjectId();
 
   beforeEach(async () => {
     process.env.NODE_ENV = "testing"
@@ -16,7 +23,9 @@ describe("GET /tasks", () => {
 
     // Add a user list.
     listInfo = await addAUserList(server, existUserJWT);
-    validListId = listInfo.body._id;    
+    validListId = listInfo.body._id;
+    
+    validPath = `/lists/${validListId}/tasks`;
   });
 
   afterEach(async () => {
@@ -25,38 +34,42 @@ describe("GET /tasks", () => {
   });
 
   it("Should throw an error if the JWT header isn't exist ot it's invalid.", async () => {
-    console.log("HERE")
-    expect(1).toBe(1);
-    // const payload = {email: "test@test.com", password: "123456"};
-    // const userInfo = await request(server).post("/users/signUp").send(payload);
-
-    // // Generate a JWT with a different JWT Secret Key.
-    // const invalidJWT = await generateFakeJWT(userInfo);
+    const invalidJWT = await generateFakeJWT(userDocument);
     
-    // const invalidJWTs = ["", invalidJWT];
+    const invalidJWTs = ["", invalidJWT];
 
-    // for(const invalidJWT of invalidJWTs){
-    //   const {status, error} = 
-    //     await request(server).get("/lists").set("x-access-token", invalidJWT); 
+    for(const invalidJWT of invalidJWTs){
+      const {status, error} = 
+        await request(server).get(validPath).set("x-access-token", invalidJWT); 
       
-    //   expect(status).toBe(401);
-    //   expect(error).toHaveProperty("message");
-    // };
+      expect(status).toBe(401);
+      expect(error).toHaveProperty("message");
+    };
   })
 
-  // it("Should return the user list since the JWT is valid.", async () => {    
-  //   const payload = {email: "test@test.com", password: "123456"};
-  //   const {header} = await request(server).post("/users/signUp").send(payload);
-  //   const validAccessToken = {"x-access-token": header["x-access-token"]};
-
-  //   await request(server)
-  //     .post("/lists").set(validAccessToken).send({title: "list 1"});
-  //   await request(server)
-  //     .post("/lists").set(validAccessToken).send({title: "list 2"});
-
-  //   const {body} = await request(server).get("/lists").set(validAccessToken);
+  it("Should return an error if the list id is invalid.", async () => {  
+    const invalidListIds = ["aabbccdd", 1234554321, "aabb11__aabb22"];
     
-  //   expect(body[0]).toMatchObject({title: "list 1"});
-  //   expect(body[1]).toMatchObject({title: "list 2"});
-  // })
+    for(let invalidListId of invalidListIds) {
+      const newPath = `/lists/${invalidListId}/tasks`;
+
+      const {status, body, error} = 
+        await request(server).get(newPath).set("x-access-token", existUserJWT);
+
+      expect(status).toBe(400);
+      expect(body.message).toContain("Invalid url.");
+    };
+  })
+
+  it("Should return an error if the list isn't exist.", async () => {
+    const newPath = `/lists/${validId}/tasks`;
+
+    const {status, body, error} = 
+      await request(server).get(newPath).set("x-access-token", existUserJWT);
+  
+    // console.log(error)
+
+      expect(status).toBe(404);
+      expect(body.message).toContain("This List does not exist.");
+  })
 });
