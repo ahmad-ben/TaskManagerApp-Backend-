@@ -14,7 +14,7 @@ tasksRoute.get(
   '/', 
   [
     verifyJWTMiddle, 
-    joiValidateParamsMiddle(validateGetTasksParamsJoi),
+    joiValidateParamsMiddle(validateListIdParam),
     verifyHavingListMiddle
   ], 
   tryCatchWrapper( async (req, res) => {
@@ -37,25 +37,24 @@ tasksRoute.get(
     });
 
     if(!oneTaskList) throw new appError(
-      'This Task is not exist.',
+      'This Task does not exist.',
       404, true, 'toastr'
     );
 
     res.send(oneTaskList);
   })
-
 )
 
 tasksRoute.post(
   '/', 
   [
     verifyJWTMiddle, 
-    joiValidateParamsMiddle(validatePostTaskParamsJoi),
+    joiValidateParamsMiddle(validateListIdParam),
     joiValidateBodyMiddle(validatePostTaskBodyJoi),
     verifyHavingListMiddle
   ],
   tryCatchWrapper(async (req, res) => {
-    const newTask = await TaskModel({
+    const newTask = new TaskModel({
       title: req.body.title,
       _listId: req.listDocumentDB._id,
     })
@@ -81,7 +80,7 @@ tasksRoute.patch(
     );
 
     if(!updatedTaskDocument) throw new appError(
-      'This Task is not exist.',
+      'This Task does not exist.',
       404, true, 'toastr'
     );
 
@@ -93,7 +92,7 @@ tasksRoute.delete(
   '/', 
   [
     verifyJWTMiddle, 
-    joiValidateParamsMiddle(validateDeleteTasksParamsJoi),
+    joiValidateParamsMiddle(validateListIdParam),
     verifyHavingListMiddle
   ], 
   tryCatchWrapper(async (req, res) => {
@@ -123,7 +122,7 @@ tasksRoute.delete(
     });
 
     if(!deletedTaskDocument) throw new appError(
-      'This Task is not exist.',
+      'This Task does not exist.',
       404, true, 'toastr'
     );
 
@@ -131,18 +130,8 @@ tasksRoute.delete(
   })
 )
 
-function validateGetTasksParamsJoi(paramsData){
-  const paramsSchema =  Joi.object({listId: Joi.objectId().required()})  //?? Duplicate
-  // console.log("paramsData", paramsData);
-  // console.log("validation result", paramsSchema.validate(paramsData));
-  
-  return paramsSchema.validate(paramsData);
-}
-
-// console.log(validateGetTasksParamsJoi(""))
-
-function validateDeleteTasksParamsJoi(paramsData){
-  const paramsSchema =  Joi.object({listId: Joi.objectId().required()})  //?? Duplicate
+function validateListIdParam(paramsData){
+  const paramsSchema = Joi.object({listId: Joi.objectId().required()})  
   return paramsSchema.validate(paramsData);
 }
 
@@ -154,8 +143,20 @@ function validateGetTaskParamsJoi(paramsData){
   return paramsSchema.validate(paramsData);
 }
 
-function validatePostTaskParamsJoi(paramsData){
-  const paramsSchema =  Joi.object({listId: Joi.objectId().required()}); //?? Duplicate just one with a proper name
+function validatePatchTaskParamsJoi(paramsData){
+  const paramsSchema =  Joi.object({
+    listId: Joi.objectId().required(),
+    taskId: Joi.objectId().required()
+  });
+
+  return paramsSchema.validate(paramsData);
+}
+
+function validateDeleteTaskParamsJoi(paramsData){
+  const paramsSchema =  Joi.object({
+    listId: Joi.objectId().required(),
+    taskId: Joi.objectId().required()
+  })
   return paramsSchema.validate(paramsData);
 }
 
@@ -167,15 +168,6 @@ function validatePostTaskBodyJoi(bodyData){
   return bodySchema.validate(bodyData);
 }
 
-function validatePatchTaskParamsJoi(paramsData){
-  const paramsSchema =  Joi.object({
-    listId: Joi.objectId().required(),
-    taskId: Joi.objectId().required()
-  });
-
-  return paramsSchema.validate(paramsData);
-}
-
 function validatePatchTaskBodyJoi(bodyData){
   const bodySchema =  Joi.object({
     title:  Joi.string().min(1).max(100),
@@ -183,14 +175,6 @@ function validatePatchTaskBodyJoi(bodyData){
   }).or('title', 'completed');
 
   return bodySchema.validate(bodyData);
-}
-
-function validateDeleteTaskParamsJoi(paramsData){
-  const paramsSchema =  Joi.object({
-    listId: Joi.objectId().required(),
-    taskId: Joi.objectId().required()
-  })
-  return paramsSchema.validate(paramsData);
 }
 
 module.exports = tasksRoute;

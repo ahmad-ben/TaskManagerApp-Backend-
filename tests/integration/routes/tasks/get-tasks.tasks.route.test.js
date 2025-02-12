@@ -3,7 +3,6 @@ const {
   generateFakeJWT, registerAUser, addAUserList, deleteDBData
 } = require("../../../utils/index");
 const { default: mongoose } = require("mongoose");
-const { patch } = require("../../../../routes/tasks.route");
 const { TaskModel } = require("../../../../models");
 
 require("../../../../components/validation")(); 
@@ -66,10 +65,24 @@ describe("GET /lists/LIST_ID/tasks", () => {
 
     const {status, body, error} = 
       await request(server).get(newPath).set("x-access-token", existUserJWT);
-  
-    // console.log(error)
 
       expect(status).toBe(404);
       expect(body.message).toContain("This List does not exist.");
+  });
+
+  it("Should return an array of the tasks if everything is valid.", async () => {    
+    const task1 = new TaskModel({title: "Task 1 title",_listId: validListId})
+    const task2 = new TaskModel({title: "Task 1 title",_listId: validListId})
+
+    await task1.save(), await task2.save();
+
+    const {status, body} = 
+      await request(server).get(validPath).set("x-access-token", existUserJWT);
+
+      expect(status).toBe(200);
+      expect(body).toMatchObject([
+        { _listId: validListId, title: task1.title },
+        { _listId: validListId, title: task2.title }
+      ]);
   })
 });

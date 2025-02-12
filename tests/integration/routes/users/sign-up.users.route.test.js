@@ -32,6 +32,7 @@ describe("POST /users/signUp", () => {
   it("Should throw an error if the user already registered.", async () => {
     const payload = {email: "test@test.com", password: "123456"};
     await request(server).post("/users/signUp").send(payload);
+
     const res = await request(server).post("/users/signUp").send(payload);
 
     expect(res.status).toBe(400);
