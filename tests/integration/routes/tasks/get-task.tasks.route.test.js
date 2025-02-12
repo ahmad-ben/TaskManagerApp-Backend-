@@ -1,9 +1,8 @@
 const request = require("supertest");
 const {
-  generateFakeJWT, registerAUser, addAUserList, deleteDBData
+  generateFakeJWT, registerAUser, addAUserList, deleteDBData, addTask
 } = require("../../../utils/index");
 const { default: mongoose } = require("mongoose");
-const addTask = require("../../../utils/addTask");
 
 require("../../../../components/validation")(); 
 
