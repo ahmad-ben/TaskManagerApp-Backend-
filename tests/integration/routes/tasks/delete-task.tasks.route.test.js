@@ -4,22 +4,16 @@ const {
   addTask
 } = require("../../../utils/index");
 const { default: mongoose } = require("mongoose");
+const { TaskModel } = require("../../../../models");
 
 require("../../../../components/validation")(); 
 
 let server, userDocument, validUserJWT, 
   listInfo, validListId, validPath, taskInfo, validTaskId;
 
-describe("PATCH /lists/LIST_ID/tasks/TASK_ID", () => {
+describe("DELETE /lists/LIST_ID/tasks/TASK_ID", () => {
   // Valid ID for testing purposes.
   const validMongoId = new mongoose.Types.ObjectId();
-
-  const validBodyTitle = {title: "New Task Title From validBodyTitle."};
-  const validBodyComplete = {completed: true};
-  const validBodyTitleAndCompleted = {
-    title: "New Task Title From validBodyTitleAndCompleted.",
-    completed: false,
-  };
 
   beforeEach(async () => {
     process.env.NODE_ENV = "testing"
@@ -53,9 +47,7 @@ describe("PATCH /lists/LIST_ID/tasks/TASK_ID", () => {
     for(const invalidJWT of invalidJWTs){
       const {status, error} = 
         await request(server)
-          .patch(validPath)
-          .send(validBodyTitle)
-          .set("x-access-token", invalidJWT); 
+          .delete(validPath).set("x-access-token", invalidJWT);
 
       expect(status).toBe(401);
       expect(error).toHaveProperty("message");
@@ -71,9 +63,7 @@ describe("PATCH /lists/LIST_ID/tasks/TASK_ID", () => {
       
       const invalidListIdRes = 
         await request(server)
-          .patch(pathWithInvalidListId)
-          .send(validBodyComplete)
-          .set("x-access-token", validUserJWT); 
+          .delete(pathWithInvalidListId).set("x-access-token", validUserJWT);
       
       expect(invalidListIdRes.status).toBe(400);
       expect(invalidListIdRes.body.message).toContain("Invalid url.");
@@ -83,53 +73,19 @@ describe("PATCH /lists/LIST_ID/tasks/TASK_ID", () => {
 
       const invalidTaskIdRes = 
         await request(server)
-          .patch(pathWithInvalidTaskId)
-          .send(validBodyComplete)
-          .set("x-access-token", validUserJWT); 
+          .delete(pathWithInvalidTaskId).set("x-access-token", validUserJWT);
 
       expect(invalidTaskIdRes.status).toBe(400);
       expect(invalidTaskIdRes.body.message).toContain("Invalid url.");
     };
   })
 
-  it("Should return an error if the body is invalid.", async () => {    
-    const invalidPayloads = [
-      "", [], false, {}, 
-
-      {"title": ""}, {"title": 12345},
-      {"title": 
-        `A Long Task Title That Is More Than 100 Characters,
-        The Maximum Allowed We Put In Our Conditions In The Joi Validator Fun.`
-      },
-
-      {"completed": "completed should be a boolean."},
-      {"completed": 123}, {"completed": null},
-
-      {title: null, completed: undefined},
-      {title: undefined, completed: null},
-    ];
-
-    for(const invalidPayload of invalidPayloads){
-      const {status, error, body} = 
-        await request(server)
-          .patch(validPath)
-          .send(invalidPayload)
-          .set("x-access-token", validUserJWT); 
-      
-
-      expect(status).toBe(400);
-      expect(error).toHaveProperty("message");
-    }
-  });
-
   it("Should return an error if the list doesn't exist.", async () => {
     const notExistListPath = `/lists/${validMongoId}/tasks/${validTaskId}`;
 
     const {status, body} = 
       await request(server)
-        .patch(notExistListPath)
-        .send(validBodyTitleAndCompleted)
-        .set("x-access-token", validUserJWT);
+        .delete(notExistListPath).set("x-access-token", validUserJWT);
 
     expect(status).toBe(404);
     expect(body.message).toContain("This List does not exist.");
@@ -138,32 +94,27 @@ describe("PATCH /lists/LIST_ID/tasks/TASK_ID", () => {
   it("Should return an error if the task doesn't exist.", async () => {
     const notExistTaskPath = `/lists/${validListId}/tasks/${validMongoId}`;
 
-    const {status, body} = 
+    const {status, body, error} = 
       await request(server)
-        .patch(notExistTaskPath)
-        .send(validBodyTitle)
-        .set("x-access-token", validUserJWT);
-
+        .delete(notExistTaskPath).set("x-access-token", validUserJWT);
+  
     expect(status).toBe(404);
     expect(body.message).toContain("This Task does not exist.");
   });
 
-  it("Should update and return the task if everything is correct.", async () => {  
-    const updatesPayloads = 
-      [validBodyTitle, validBodyComplete, validBodyTitleAndCompleted];
-    
-    for(let updatesPayload of updatesPayloads) {
-      const {status, body} = 
-        await request(server)
-          .patch(validPath)
-          .send(updatesPayload)
-          .set("x-access-token", validUserJWT);
+  it("Should delete and return the task if everything is correct.", async () => {  
+    const {status, body} = 
+      await request(server)
+        .delete(validPath).set("x-access-token", validUserJWT);
 
-        expect(status).toBe(200);
-        expect(body).toMatchObject({
-          _listId: validListId,
-          ...updatesPayload
-        });
-    }
+    expect(status).toBe(200);
+    expect(body).toMatchObject({
+      _id: validTaskId,
+      _listId: validListId,
+    });
+
+    const deletedTask = await TaskModel.findById(validTaskId);
+
+    expect(deletedTask).toBe(null);
   })
 });

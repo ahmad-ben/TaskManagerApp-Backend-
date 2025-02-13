@@ -27,7 +27,7 @@ tasksRoute.get(
   '/:taskId',                               
   [
     verifyJWTMiddle, 
-    joiValidateParamsMiddle(validateGetTaskParamsJoi),
+    joiValidateParamsMiddle(validateListTaskIDParamsJoi),
     verifyHavingListMiddle
   ], 
   tryCatchWrapper( async (req, res) => {
@@ -68,7 +68,7 @@ tasksRoute.patch(
   '/:taskId', 
   [
     verifyJWTMiddle, 
-    joiValidateParamsMiddle(validatePatchTaskParamsJoi),
+    joiValidateParamsMiddle(validateListTaskIDParamsJoi),
     joiValidateBodyMiddle(validatePatchTaskBodyJoi),
     verifyHavingListMiddle
   ], 
@@ -112,7 +112,7 @@ tasksRoute.delete(
   '/:taskId', 
   [
     verifyJWTMiddle, 
-    joiValidateParamsMiddle(validateDeleteTaskParamsJoi),
+    joiValidateParamsMiddle(validateListTaskIDParamsJoi),
     verifyHavingListMiddle
   ], 
   tryCatchWrapper(async (req, res) => {
@@ -135,27 +135,10 @@ function validateListIdParam(paramsData){
   return paramsSchema.validate(paramsData);
 }
 
-function validateGetTaskParamsJoi(paramsData){
+function validateListTaskIDParamsJoi(paramsData){
   const paramsSchema =  Joi.object({
     listId: Joi.objectId().required(),
     taskId: Joi.objectId().required(),
-  })
-  return paramsSchema.validate(paramsData);
-}
-
-function validatePatchTaskParamsJoi(paramsData){
-  const paramsSchema =  Joi.object({
-    listId: Joi.objectId().required(),
-    taskId: Joi.objectId().required()
-  });
-
-  return paramsSchema.validate(paramsData);
-}
-
-function validateDeleteTaskParamsJoi(paramsData){
-  const paramsSchema =  Joi.object({
-    listId: Joi.objectId().required(),
-    taskId: Joi.objectId().required()
   })
   return paramsSchema.validate(paramsData);
 }
