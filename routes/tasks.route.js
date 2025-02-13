@@ -100,11 +100,7 @@ tasksRoute.delete(
       _listId: req.listDocumentDB._id
     });
 
-    res.json({
-      status: 'success',
-      deletedCount: deletedTasksDocument.deletedCount,
-      message: `${deletedTasksDocument.deletedCount} task(s) deleted successfully.`
-    });
+    res.send(deletedTasksDocument);
   })
 )
 
