@@ -28,7 +28,7 @@ This app isn't a simple reproduction of the playlist's content. I expanded on th
 
 ## 🔗 Frontend Repository  
 
-The frontend code for this project can be found here: [TaskManagerApp-Frontend](https://github.com/ahmad-ben/TaskManagerApp-Frontend-).
+The frontend code for this project can be found here: [Frontend Repo](https://github.com/ahmad-ben/TaskManagerApp-Frontend-).
 
 ## 🌐 Connect With Me  
 
